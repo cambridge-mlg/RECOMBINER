@@ -24,82 +24,27 @@ def count_net_params(in_dim, hidden_dims, out_dim):
     return n_params, sum_n_params
 
 
-def get_training_pair(image_path,
-                      feature_size=None,
-                      patch=False,
-                      patch_size=None):
-    """
-    Given an image path, this function returns the fourier transformed feature and the rgb values. If patch is True, the
-    image will be clipped into patches and this function will return a batch of  fourier transformed feature and the rgb
-    values.
-    """
-    image = Image.open(image_path)
-    image = ToTensor()(image)
-    if image.shape[1] > image.shape[2]: # rotate image to make sure it is landscape layout
-        image = image.permute([0, 2, 1])
-    c, x, y = image.shape
-
-    if not patch:
-        inputs, outputs = to_grid_coordinates_and_features(image)
-        w = torch.exp(torch.linspace(0, np.log(1024), feature_size // 4, device=inputs.device))
-        inputs = torch.matmul(inputs.unsqueeze(-1), w.unsqueeze(0)).view(*inputs.shape[:-1], -1)
-        inputs = torch.cat([torch.cos(np.pi * inputs), torch.sin(np.pi * inputs)], dim=-1)
-        return inputs, outputs
-    else:
-        Inputs = []
-        Outputs = []
-        for x_idx in range(x // patch_size):
-            for y_idx in range(y // patch_size):
-                patch = image[:,
-                        x_idx * patch_size: x_idx * patch_size + patch_size,
-                        y_idx * patch_size: y_idx * patch_size + patch_size
-                        ]
-                inputs, outputs = to_grid_coordinates_and_features(patch)
-                w = torch.exp(torch.linspace(0, np.log(1024), feature_size // 4, device=inputs.device))
-                inputs = torch.matmul(inputs.unsqueeze(-1), w.unsqueeze(0)).view(*inputs.shape[:-1], -1)
-                inputs = torch.cat([torch.cos(np.pi * inputs), torch.sin(np.pi * inputs)], dim=-1)
-                Inputs.append(inputs)
-                Outputs.append(outputs)
-        Inputs = torch.stack(Inputs)
-        Outputs = torch.stack(Outputs)
-        return Inputs, Outputs
-
-def load_dataset(image_paths, feature_size, patch, patch_size):
-    # data
-    X = []
-    Y = []
-    for i in image_paths:
-        x, y = get_training_pair(i,
-                                 feature_size=feature_size,
-                                 patch=patch,
-                                 patch_size=patch_size
-                                 )
-        if patch:
-            X.append(x)
-            Y.append(y)
-        else:
-            X.append(x[None, :, :])
-            Y.append(y[None, :, :])
-    return torch.cat(X, dim=0), torch.cat(Y, dim=0)
 
 
-def PSNR(original, compressed):
+def PSNR(original, compressed, round):
     """
     Calculate PSNR of one image, or patches of one image.
     """
-    compressed = np.round(np.clip(compressed, 0, 1) * 255) / 255
+    if round:
+        compressed = np.round(np.clip(compressed, 0, 1) * 255) / 255
     mse = np.mean((original - compressed) ** 2)
     max_pixel = 1
     psnr = 20 * np.log10(max_pixel / np.sqrt(mse))
     return psnr.item()
 
 
-def batch_PSNR(original, compressed):
+def batch_PSNR(original, compressed, round):
     """
     Calculate PSNR of images in one batch
     """
     batch_size = original.shape[0]
-    compressed = np.round(np.clip(compressed, 0, 1) * 255) / 255
+    if round:
+        compressed = np.round(np.clip(compressed, 0, 1) * 255) / 255
     mse = np.mean((original.reshape(batch_size, -1) - compressed.reshape(batch_size, -1)) ** 2, axis=-1)
     max_pixel = 1
     psnr = 20 * np.log10(max_pixel / np.sqrt(mse))

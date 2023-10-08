@@ -8,13 +8,13 @@ from tqdm import tqdm
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--train_dir', required=True)
-    parser.add_argument('--train_size', type=int, default=None)
-    parser.add_argument("--dataset", default="cifar", choices=("cifar", "kodak",), )
+    parser.add_argument('--seed', type=int, default=42, help='random seed')
+    parser.add_argument('--train_dir', required=True, help='training dir')
+    parser.add_argument('--train_size', type=int, default=None, help='training size')
+    parser.add_argument("--dataset", choices=("cifar", "kodak", "video", "audio", "protein"), )
     parser.add_argument("--device", default="cuda")
-    parser.add_argument("--max_bitrate", type=float, required=True)
-    parser.add_argument("--saving_dir", default="./")
+    parser.add_argument("--max_bitrate", type=float, required=True, help="bitrate budget to adjust beta")
+    parser.add_argument("--saving_dir", default="./", help="dir to save prior/linear transform/upsampling net/initializations")
     args = parser.parse_args()
     return args
 
