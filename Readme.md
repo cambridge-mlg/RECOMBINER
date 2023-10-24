@@ -17,7 +17,7 @@ PyTorch implementation of the INR-based codec [RECOMBINER](https://arxiv.org/abs
 
 ### Training RECOMBINER
 
-### Compression Test Instances
+### Compression Test Data Points
 
 
 ## Citation
