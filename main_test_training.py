@@ -1,7 +1,7 @@
 import numpy as np
 
 from test_model import *
-from prior_model import get_grouping_by_kl_with_fixed_order, Upsample
+from prior_model import *
 import argparse
 import os
 

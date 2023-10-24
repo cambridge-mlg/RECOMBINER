@@ -1,9 +1,7 @@
 """
 This file processes the dataset for image, audio, video and protein.
 
-
-Author: Jiajun He (jh2383@cam.ac.uk)
-Last Update: 2023-10-8
+Last updated on 2023-10-9
 """
 
 import torch

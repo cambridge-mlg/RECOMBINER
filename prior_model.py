@@ -15,24 +15,24 @@ class Mapping(nn.Module):
         self.A = nn.ParameterList([(torch.rand(net_dims[i] * (net_dims[i-1]+1), net_dims[i] * (net_dims[i-1]+1)) * 2 - 1) / (net_dims[i] * (net_dims[i-1]+1)) for i in range(1, len(net_dims))])
 
 class Upsample(nn.Module):
-    def __init__(self, kernel_dim):
+    def __init__(self, kernel_dim, paddings):
         super().__init__()
         in_dim = 128
         hidden_dim = 64
         out_dim = 16
         self.up1 = nn.Upsample(scale_factor=4)
         if kernel_dim == 1:
-            self.conv1 = nn.Conv1d(in_dim, hidden_dim, 5, padding=2)
-            self.conv2 = nn.Conv1d(hidden_dim, hidden_dim, 3, padding=1)
-            self.conv3 = nn.Conv1d(hidden_dim, out_dim, 3, padding=1)
+            self.conv1 = nn.Conv1d(in_dim, hidden_dim, 5, padding=paddings[0])
+            self.conv2 = nn.Conv1d(hidden_dim, hidden_dim, 3, padding=paddings[1])
+            self.conv3 = nn.Conv1d(hidden_dim, out_dim, 3, padding=paddings[2])
         if kernel_dim == 2:
-            self.conv1 = nn.Conv2d(in_dim, hidden_dim, 5, padding=2)
-            self.conv2 = nn.Conv2d(hidden_dim, hidden_dim, 3, padding=1)
-            self.conv3 = nn.Conv2d(hidden_dim, out_dim, 3, padding=1)
+            self.conv1 = nn.Conv2d(in_dim, hidden_dim, 5, padding=paddings[0])
+            self.conv2 = nn.Conv2d(hidden_dim, hidden_dim, 3, padding=paddings[1])
+            self.conv3 = nn.Conv2d(hidden_dim, out_dim, 3, padding=paddings[2])
         if kernel_dim == 3:
-            self.conv1 = nn.Conv3d(in_dim, hidden_dim, 5, padding=2)
-            self.conv2 = nn.Conv3d(hidden_dim, hidden_dim, 3, padding=1)
-            self.conv3 = nn.Conv3d(hidden_dim, out_dim, 3, padding=1)
+            self.conv1 = nn.Conv3d(in_dim, hidden_dim, 5, padding=paddings[0])
+            self.conv2 = nn.Conv3d(hidden_dim, hidden_dim, 3, padding=paddings[1])
+            self.conv3 = nn.Conv3d(hidden_dim, out_dim, 3, padding=paddings[2])
         self.act1 = nn.LeakyReLU()
         self.up2 = nn.Upsample(scale_factor=2)
         self.act2 = nn.LeakyReLU()
@@ -61,7 +61,7 @@ class PriorBNNmodel(nn.Module):
                  pixel_size,
                  upsample_factor,
                  latent_dim,
-                 dataset='kodak',
+                 patch,
                  random_seed=42,
                  device="cuda",
                  init_log_scale=-4,
@@ -74,20 +74,18 @@ class PriorBNNmodel(nn.Module):
         self.n_layers = len(hidden_dims) + 1
         self.dims = [in_dim] + hidden_dims + [out_dim]
         self.device = device
-        self.dataset = dataset
         self.random_seed = random_seed
+
+        self.patch = patch
 
         self.act = lambda x: torch.sin(w0 * x)
         self.st = lambda x: F.softplus(x, beta=1, threshold=20) / 6
 
         self.net_params_list, self.cum_param_sizes = count_net_params(in_dim, hidden_dims, out_dim)
-        self.layer_stds = []
-        for idx in range(self.n_layers):
-            w_std = (1 / in_dim) if idx == 0 else (np.sqrt(c / hidden_dims[idx - 1]) / w0) 
-            self.layer_stds.append(w_std)
+        w_std = np.sqrt(c / hidden_dims[-1]) / w0
 
         torch.manual_seed(random_seed)
-        if self.dataset == 'kodak':
+        if self.patch:
             # randomly initialize all training instances' loc
             self.loc = nn.Parameter(torch.rand(training_set_size, self.cum_param_sizes[-1]) * w_std * 2 - w_std)
             self.log_scale = nn.Parameter(torch.zeros([training_set_size, self.cum_param_sizes[-1]]) + init_log_scale)
@@ -146,7 +144,7 @@ class PriorBNNmodel(nn.Module):
         ])
         x = torch.cat([x, coord_feature], -1) # n_patches, n_pixels, n_dims
 
-        if self.dataset == 'kodak':
+        if 
             # if kodak, loc and scale are determined by their hyper-priors
             hyper_loc_loc = self.hyper_loc_loc.reshape([-1, 6, self.hyper_loc_loc.shape[-1]]).reshape([-1, 2, 3, self.hyper_loc_loc.shape[-1]]) # n_images, 2, 3, dim
             hyper_loc_loc = hyper_loc_loc[:, :, None, :, None, :] # n_images, 2, 1, 3, 1, dim
@@ -335,24 +333,3 @@ def get_grouping_by_kl(kls_bits):
 
 
 
-def get_grouping_by_kl_with_fixed_order(kls_bits, index):
-    parameters = np.arange(kls_bits.shape[0])
-    weights = kls_bits
-
-    result = group_parameters(parameters[index], weights[index])
-    n_groups = len(result)
-    param2group = np.concatenate([np.array(i) for i in result])
-    group2param = np.argsort(param2group)
-    group_idx = np.concatenate([np.array([i, ] * len(result[i])) for i in range(len(result))])
-    group_start_index = []
-    group_end_index = []
-    cursor = 0
-    for i in result:
-        group_start_index.append(cursor)
-        cursor += len(i)
-        group_end_index.append(cursor)
-    group_start_index = np.array(group_start_index)
-    group_end_index = np.array(group_end_index)
-
-    group_kls = np.array([sum([weights[i] for i in group]) for group in result])
-    return group_idx, group_start_index, group_end_index, group2param, param2group, n_groups, group_kls, weights
