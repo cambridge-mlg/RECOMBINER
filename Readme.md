@@ -4,12 +4,37 @@ PyTorch implementation of the INR-based codec [RECOMBINER](https://arxiv.org/abs
 
 ## Installation
 
+We suggest using the following commands.
+
+```
+conda create --name $ENV_NAME
+conda activate $ENV_NAME
+
+```
+
+
 ## Dataset Preparation
 
 ### Kodak
+
+Please put training images and test images into ```train_dir``` and ```test_dir``` respectively.
+For the training set, we suggest using [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/) cropped to the same size as the Kodim images.
+
+
 ### CIFAR-10
-### UCF-101
-### LibriSpeech
+
+Please put training images and test images into ```train_dir``` and ```test_dir``` respectively.
+
+### Video (UCF-101)
+
+First put training and test clips into ```train_dir``` and ```test_dir```.
+Then call ```dataset.process_video_datasets``` to process training and test datasets.
+The processed video tensor will be saved in binary files in the specified directory.
+
+
+### Audio (LibriSpeech)
+
+
 ### 3D Protein Structure
 
 

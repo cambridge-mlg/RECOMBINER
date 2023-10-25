@@ -6,12 +6,12 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from torch.distributions import kl_divergence, Normal
 
-from helper import map_lpe_to_inr_inputs, \
-                   map_hierarchical_model_to_int_weights, \
-                   count_layer_params, \
-                   count_net_params, \
-                   PSNR, \
-                   batch_PSNR
+from utils import map_lpe_to_inr_inputs, \
+                  map_hierarchical_model_to_int_weights, \
+                  count_layer_params, \
+                  count_net_params, \
+                  PSNR, \
+                  batch_PSNR
 
 class LinearTransform(nn.Module):
     def __init__(self, net_dims):
