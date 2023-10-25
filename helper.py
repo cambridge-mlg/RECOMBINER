@@ -65,6 +65,8 @@ def map_lpe_to_inr_inputs(upsample_net,
         3) input it through the upsampling network, 
         4) permute it back
         5) re-split upsampled positional encodings into patches
+        Note, that if we treat patches separately as above, it will only have a very minor influence on performance.
+        But it makes more sense to upsample them as a whole in principle. That is why we suggest this way.
         '''
         latent_pe = latent_pe.reshape(sample_size,
                                       -1, # number of entire data points
