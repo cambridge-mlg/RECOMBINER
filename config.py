@@ -1,5 +1,7 @@
 """
-Last updated on 2023-10-24
+Last update on 25-Oct-2025
+
+This file contains configs for each data modality in json format.
 
 Args:
     input_dim: input dimension of the inr
@@ -14,8 +16,8 @@ Args:
 
     latent_dim: number of channels of the latent positional encodings
     paddings: padding parameter of each conv layer in the upsampling network
-    scale_factors: scale factor of each upsampling layer in the upsampling network
-    upsample_factors: upsampling factor along each dimension through the upsampling network
+    layerwise_scale_factors: scale factor of each upsampling layer in the upsampling network.
+    upsample_factors: upsampling factor along each dimension through the upsampling network.
     
     bitrate_range: min_bitrate = max(max_bitrate - bitrate_range, lowest_bitrate)
     lowest_bitrate: min_bitrate = max(max_bitrate - bitrate_step, lowest_bitrate). These parameters are NOT very important. Can be set to any reasonable value
@@ -56,7 +58,7 @@ Args:
   # positional encodings and upsampling network parameters
   'latent_dim':128,
   'paddings': [2, 1, 1],
-  'scale_factors': [4, 2, 2], 
+  'layerwise_scale_factors': [4, 2, 2], 
   'upsample_factors':[16, 16], 
   # other parameters
   'bitrate_range': 0.1,
@@ -77,7 +79,7 @@ Args:
   # positional encodings and upsampling network parameters
   'latent_dim':128,
   'paddings': [2, 1, 1],
-  'scale_factors': [4, 2, 2], 
+  'layerwise_scale_factors': [4, 2, 2], 
   'upsample_factors':[16], 
   # other parameters
   'bitrate_range': 0.3,
@@ -91,15 +93,15 @@ Args:
   'hidden_dims': [32, ] * 3,
   # data and patch parameters
   'data_dim':3,
-  'pixel_sizes': [16, 16, 24],
+  'pixel_sizes': [24, 16, 16],
   'patch': True,
-  'hierarchical_patch_nums': {'level2': [4, 4, 1], 'level3': [8, 8, 1]},
-  'patch_nums': [128//16, 128//16, 24//24],
+  'hierarchical_patch_nums': {'level2': [1, 4, 4], 'level3': [1, 8, 8]},
+  'patch_nums': [24//24, 128//16, 128//16],
   # positional encodings and upsampling network parameters
   'latent_dim':128,
   'paddings': [2, 1, 1], 
-  'scale_factors': [(6, 4, 4), 2, 2], 
-  'upsample_factors':[16, 16, 24], 
+  'layerwise_scale_factors': [(6, 4, 4), 2, 2],
+  'upsample_factors':[24, 16, 16],
   # other parameters
   'bitrate_range': 0.3,
   'lowest_bitrate': 0.1, 
@@ -119,7 +121,7 @@ Args:
   # positional encodings and upsampling network parameters
   'latent_dim':128,
   'paddings': [2, 1, 1], 
-  'scale_factors': [4, 2, 2], 
+  'layerwise_scale_factors': [4, 2, 2], 
   'upsample_factors':[16], 
   # other parameters
   'bitrate_range': 0.3,

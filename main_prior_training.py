@@ -117,7 +117,7 @@ def main():
                           hh_loc_prior_scale,
                           mapping,
                           scale_mapping,
-                          training_mapping=True,  # train mapping in the first 100 iterations
+                          training_mapping=True, 
                           kl_beta=kl_beta)
         n_epoch = 100  # after the first iteration, change epoch to 100
 

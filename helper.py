@@ -1,3 +1,11 @@
+"""
+Last update on 25-Oct-2023
+
+
+
+"""
+
+
 import numpy as np
 import torch
 
@@ -19,7 +27,7 @@ def map_lpe_to_inr_inputs(upsample_net,
     
     Args:
         upsample_net: the upsampling network
-        latent_pe: torch tensor. latent positional encodings. shape (sample_size, data_num, latent_dim*product of spatial dimensions)
+        latent_pe: torch tensor. latent positional encodings. shape (sample_size, data_num, latent_dim*product of spatial dimensions) or (sample_size, data_num, *spatial dimensions, latent_dim)
         latent_dim: latent positional encodings channels number
         pixel_sizes: A list of number of pixels along each dimension in each data point / patch.
         upsample_factors: upsampling factors when mapping latent positional encodings to upsampled positional encodings. List containing factor along each dimension
@@ -119,8 +127,7 @@ def map_lpe_to_inr_inputs(upsample_net,
     pe = pe.reshape(sample_size, data_num, -1, pe.shape[-1]).permute(1, 0, 2, 3)
     return pe
 
-
-def map_hierarchical_model_to_inr_weights(hierarchical_model,
+def map_hierarchical_model_to_int_weights(use_hierarchical_model,
                                           loc, scale,
                                           h_loc, h_scale,
                                           hh_loc, hh_scale,
@@ -133,19 +140,20 @@ def map_hierarchical_model_to_inr_weights(hierarchical_model,
     This function samples hierarchical model to inr weights (before linear transform, i.e., h_w)
 
     Args:
-        hierarchical_model: bool. use hierarchical model or not
+        use_hierarchical_model: bool. use hierarchical model or not
+        loc, scale, h_loc, h_scale, hh_loc, hh_scale: mean and std of variables in each level
+        sample_size: sample size
         hierarchical_patch_nums: dist. how many patches does each group in level 2/3 contain
         patch_nums: list. patch num along each dimension
-
-
+        data_dim: data point dimensionality, e.g., 3 for video, 2 for image, 1 for audio
     """
-    if hierarchical_model:
+    if use_hierarchical_model:
         data_num = loc.shape[0]
 
         # sample level 1
         loc = loc[:, None, :]
         scale = scale[:, None, :].repeat([1, sample_size, 1])
-        sample_latent_all = loc + scale * torch.randn_like(scale)
+        sample_h_w = loc + scale * torch.randn_like(scale)
 
         # reshape and repeat level 2
         number_of_groups = [patch_nums[i]//hierarchical_patch_nums['level2'][i] for i in range(data_dim)]
@@ -188,14 +196,53 @@ def map_hierarchical_model_to_inr_weights(hierarchical_model,
         hh_scale = hh_scale[:, None, :].repeat([1, sample_size, 1])  # 1, sample_size, dim
         hh = hh_loc + hh_scale * torch.randn_like(hh_scale)
 
-        sample_latent_all = sample_latent_all + h + hh
+        sample_h_w = sample_h_w + h + hh
 
     else:
         loc = loc[:, None, :]
         scale = scale[:, None, :].repeat([1, sample_size, 1])
-        sample_latent_all = loc + scale * torch.randn_like(scale)
+        sample_h_w = loc + scale * torch.randn_like(scale)
     
-    return sample_latent_all
+    return sample_h_w
 
 
+def count_layer_params(in_dim, out_dim):
+    """
+    This function counts parameter size for a linear layer
+    """
+    n_w = in_dim * out_dim
+    n_b = out_dim
+    return n_w + n_b
 
+
+def count_net_params(in_dim, hidden_dims, out_dim):
+    """
+    This function counts parameter size for a given MLP
+    """
+    dims = [in_dim] + hidden_dims + [out_dim]
+    n_params = [count_layer_params(dims[i], dims[i + 1]) for i in range(len(dims) - 1)]
+    sum_n_params = np.cumsum(n_params)
+    return n_params, sum_n_params
+
+
+def PSNR(original, compressed, round, max_value=1):
+    """
+    Calculate PSNR of one image, or patches of one image.
+    """
+    if round:
+        compressed = np.round(np.clip(compressed, 0, 1) * 255) / 255
+    mse = np.mean((original - compressed) ** 2)
+    psnr = 20 * np.log10(max_value / np.sqrt(mse))
+    return psnr.item()
+
+
+def batch_PSNR(original, compressed, round, max_value=1):
+    """
+    Calculate PSNR of images in one batch
+    """
+    batch_size = original.shape[0]
+    if round:
+        compressed = np.round(np.clip(compressed, 0, 1) * 255) / 255
+    mse = np.mean((original.reshape(batch_size, -1) - compressed.reshape(batch_size, -1)) ** 2, axis=-1)
+    psnr = 20 * np.log10(max_value / np.sqrt(mse))
+    return psnr
