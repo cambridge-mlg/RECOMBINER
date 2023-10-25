@@ -15,12 +15,12 @@ class Mapping(nn.Module):
         self.A = nn.ParameterList([(torch.rand(net_dims[i] * (net_dims[i-1]+1), net_dims[i] * (net_dims[i-1]+1)) * 2 - 1) / (net_dims[i] * (net_dims[i-1]+1)) for i in range(1, len(net_dims))])
 
 class Upsample(nn.Module):
-    def __init__(self, kernel_dim, paddings):
+    def __init__(self, kernel_dim, paddings, upsample_factors):
         super().__init__()
         in_dim = 128
         hidden_dim = 64
         out_dim = 16
-        self.up1 = nn.Upsample(scale_factor=4)
+        self.up1 = nn.Upsample(scale_factor=upsample_factors[0])
         if kernel_dim == 1:
             self.conv1 = nn.Conv1d(in_dim, hidden_dim, 5, padding=paddings[0])
             self.conv2 = nn.Conv1d(hidden_dim, hidden_dim, 3, padding=paddings[1])
@@ -34,9 +34,9 @@ class Upsample(nn.Module):
             self.conv2 = nn.Conv3d(hidden_dim, hidden_dim, 3, padding=paddings[1])
             self.conv3 = nn.Conv3d(hidden_dim, out_dim, 3, padding=paddings[2])
         self.act1 = nn.LeakyReLU()
-        self.up2 = nn.Upsample(scale_factor=2)
+        self.up2 = nn.Upsample(scale_factor=upsample_factors[1])
         self.act2 = nn.LeakyReLU()
-        self.up3 = nn.Upsample(scale_factor=2)
+        self.up3 = nn.Upsample(scale_factor=upsample_factors[2])
         
     def forward(self, x):
         x = self.up1(x)
