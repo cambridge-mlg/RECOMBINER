@@ -5,7 +5,6 @@ sys.path.append('../')
 import torch
 import numpy as np
 from PIL import Image
-import pickle
 from torchvision.transforms import ToTensor
 from utils import to_grid_coordinates_and_features
 

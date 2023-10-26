@@ -6,11 +6,7 @@ import random
 import torch
 import torchaudio
 import numpy as np
-import torchvision
-from PIL import Image
 import pickle
-from torchvision.transforms import ToTensor
-from torchvision import io, transforms
 from utils import to_grid_coordinates_and_features
 
 

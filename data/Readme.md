@@ -43,3 +43,7 @@ We provide the 24 test data instances we used in the paper in ```test-clean.zip`
 
 ### 3D Protein Structure
 
+First put training and test PDB files into ```train_dir``` and ```test_dir```.
+Then call ```data.protein.process_protein_datasets``` to process training and test datasets.
+The processed video tensor will be saved in binary files in the specified directory.
+
