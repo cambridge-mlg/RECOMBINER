@@ -1,8 +1,11 @@
 ﻿# RECOMBINER: Robust and Enhanced Compression with Bayesian Implicit Neural Representations
 
-PyTorch implementation of the INR-based codec [RECOMBINER](https://arxiv.org/abs/2309.17182). 
+Official PyTorch implementation of the INR-based codec [RECOMBINER](https://arxiv.org/abs/2309.17182). It sets a new SOTA on CIFAR-10 at low bitrates and achieves strong performance on other modalities comparing to other INR-based codecs. This repo provides implementations of RECOMBINER across modalities, including image (Kodak, CIFAR-10), audio, video, and protein 3D structure. 
 
-## Installation
+
+
+
+## ⚙️ Installation
 
 We suggest using the following commands.
 
@@ -14,7 +17,7 @@ pip3 install -r requirements.txt
 ```
 
 
-## Dataset Preparation
+## 📁 Dataset Preparation
 
 ### Kodak
 
@@ -40,14 +43,14 @@ The processed video tensor will be saved in binary files in the specified direct
 ### 3D Protein Structure
 
 
-## Execution
+## 💻 Execution
 
 ### Training RECOMBINER
 
 ### Compression Test Data Points
 
 
-## Citation
+## 🌟 Citation
 Please consider citing the following paper if you use this repo.
 ```
 @misc{he2023recombiner,
