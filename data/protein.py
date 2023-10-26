@@ -29,7 +29,7 @@ def process_protein_datasets(train_pdb_paths, test_pdb_paths, save_dir):
                 if l >= MAX_LENGTH:
                     clips = clips[0:MAX_LENGTH]
                     backbone_clips.append(clips)
-        normalized_backbone_clips = [(np.array(backbone_clips[i]) - np.array(backbone_clips[i]).mean(0))/25 for i in range(len(backbone_clips))]
+        normalized_backbone_clips = [((torch.tensor(backbone_clips[i]) - torch.tensor(backbone_clips[i]).mean(0))/25).T for i in range(len(backbone_clips))]
         # Note, that we normalize the xyz structures by 25. Therefore, when calculating RMSD, we should scale 25 back!
         return normalized_backbone_clips
     
@@ -42,7 +42,7 @@ def process_protein_datasets(train_pdb_paths, test_pdb_paths, save_dir):
         pickle.dump(test_dataset, f_out) 
 
 
-def get_protein_pair(tensor, # C(1), L
+def get_protein_pair(tensor, # C(3), L
                      feature_size=None,
                      patch=False,
                      patch_sizes=None):
