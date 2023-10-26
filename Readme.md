@@ -48,7 +48,7 @@ The processed video tensor will be saved in binary files in the specified direct
 
 
 ## Citation
-If you use this repo, please cite the following paper.
+Please consider citing the following paper if you use this repo.
 ```
 @misc{he2023recombiner,
       title={RECOMBINER: Robust and Enhanced Compression with Bayesian Implicit Neural Representations}, 
