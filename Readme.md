@@ -9,7 +9,8 @@ We suggest using the following commands.
 ```
 conda create --name $ENV_NAME
 conda activate $ENV_NAME
-
+conda install pytorch=2.1.0 torchvision=0.16.0 torchaudio=2.1.0 pytorch-cuda=11.8 -c pytorch -c nvidia
+pip3 install -r requirements.txt
 ```
 
 
@@ -18,7 +19,8 @@ conda activate $ENV_NAME
 ### Kodak
 
 Please put training images and test images into ```train_dir``` and ```test_dir``` respectively.
-For the training set, we suggest using [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/) cropped to the same size as the Kodim images.
+For the training set, we suggest using [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/). 
+To align with the resolution of Kodak, the training images should be randomly cropped into patches with resolution of 512x768 or 768x512.
 
 
 ### CIFAR-10
