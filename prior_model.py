@@ -192,10 +192,11 @@ class PriorBNNmodel(nn.Module):
                             Normal(prior_loc, prior_scale)).sum()
         kls = kl_divergence(Normal(self.lpe_loc, self.st(self.lpe_log_scale)),
                             Normal(prior_lpe_loc, prior_lpe_scale)).sum()
-        kls = kl_divergence(Normal(self.h_loc, self.st(self.h_log_scale)),
-                            Normal(prior_h_loc, prior_h_scale)).sum()
-        kls = kl_divergence(Normal(self.hh_loc, self.st(self.hh_log_scale)),
-                            Normal(prior_hh_loc, prior_hh_scale)).sum()
+        if self.patch:
+            kls = kl_divergence(Normal(self.h_loc, self.st(self.h_log_scale)),
+                                Normal(prior_h_loc, prior_h_scale)).sum()
+            kls = kl_divergence(Normal(self.hh_loc, self.st(self.hh_log_scale)),
+                                Normal(prior_hh_loc, prior_hh_scale)).sum()
         return kls
 
     def train(self,
@@ -251,14 +252,14 @@ class PriorBNNmodel(nn.Module):
 
             MSE.append(mse.item())
         return MSE[-1] / y.shape[0], self.calculate_kl(prior_loc,
-                                                            prior_scale,
-                                                            prior_lpe_loc,
-                                                            prior_lpe_scale,
-                                                            prior_h_loc,
-                                                            prior_h_scale,
-                                                            prior_hh_loc,
-                                                            prior_hh_scale,
-                                                            ).item() / y.shape[0]
+                                                        prior_scale,
+                                                        prior_lpe_loc,
+                                                        prior_lpe_scale,
+                                                        prior_h_loc,
+                                                        prior_h_scale,
+                                                        prior_hh_loc,
+                                                        prior_hh_scale,
+                                                        ).item() / y.shape[0]
 
 def get_grouping(q_loc, q_scale, prior_loc, prior_scale):
     """

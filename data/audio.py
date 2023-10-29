@@ -98,7 +98,10 @@ def process_audio_datasets(save_dir):
     np.random.seed(0)
     idx = np.random.choice(len(train_dataset), num, False)
     np.random.seed(None)
-    train_tensor = [train_dataset[i] for i in idx]
+    train_tensor = []
+    for i in idx:
+        if train_dataset[i].shape[-1] == 48000: # sanity check to ensure the length is 48000
+            train_tensor.append(train_dataset)
 
     with open(save_dir + '/test_dataset.pkl', 'wb') as f:
         pickle.dump(test_tensor, f)

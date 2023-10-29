@@ -24,7 +24,7 @@ The processed video tensor will be saved in binary files in the specified direct
 ### Audio (LibriSpeech)
 
 First put the test clips into ```LibriSpeech/test-clean```. Then call ```data.audio.process_audio_datasets``` to process training and test datasets.
-This function will download LibriSpeech training set automatically and process the training & test sets in binary files in the specified directory.
+This function will download LibriSpeech training set automatically and process the training & test sets in binary files in the specified directory. Note, that to reduce running time and saving space, the function directly thin the training set.
 
 
 We provide the 24 test data instances we used in the paper in ```test-clean.zip```. If you would like to compress other test set, it is important to follow the same structure to be compatible with the ```torchaudio.datasets.LIBRISPEECH``` API, i.e., 
@@ -47,3 +47,7 @@ First put training and test PDB files into ```train_dir``` and ```test_dir```.
 Then call ```data.protein.process_protein_datasets``` to process training and test datasets.
 The processed video tensor will be saved in binary files in the specified directory.
 
+
+### Self-defined dataset
+
+Please update ```../config.py```, add ```xxx.py``` for the processing of the new dataset to current folder, and update ```load_data.py```. If the data modality has dimensionality higher than 3, please consider update function ```map_hierarchical_model_to_int_weights``` in ```../utils.py```.
