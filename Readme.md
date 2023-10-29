@@ -26,6 +26,12 @@ Please refer to ```./data/Readme.md```.
 
 ### Training RECOMBINER
 
+
+ 
+```
+python main_prior_training.py [--seed] [--train_dir] [--train_size] [--dataset] [--device] [--max_bitrate] [--saving_dir]
+```
+
 ### Compression Test Data Points
 
 
