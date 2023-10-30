@@ -5,7 +5,7 @@ Official PyTorch implementation of the INR-based codec [RECOMBINER](https://arxi
 
 
 
-## ⚙️ Installation
+## Installation
 
 We suggest using the following commands.
 
@@ -17,12 +17,12 @@ pip3 install -r requirements.txt
 ```
 
 
-## 📁 Dataset Preparation
+## Dataset Preparation
 
 Please refer to ```./data/Readme.md```.
 
 
-## 💻 Execution
+## Execution
 
 ### Training RECOMBINER
 
@@ -35,7 +35,9 @@ python main_prior_training.py [--seed] [--train_dir] [--train_size] [--dataset] 
 ### Compression Test Data Points
 
 
-## 🌟 Citation
+## Hyperparameters
+
+## Citation
 Please consider citing the following paper if you use this repo.
 ```
 @misc{he2023recombiner,

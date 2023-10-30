@@ -248,6 +248,12 @@ def batch_PSNR(original, compressed, round, max_value=1):
     return psnr
 
 
+def batch_RMSD(original, compressed, scale_factor):
+    batch_size = original.shape[0]
+    rmsd = (((original * scale_factor - compressed * scale_factor) ** 2).reshape(batch_size, -1).mean(-1) * 3) ** 0.5
+    return rmsd
+
+
 # Below are function modified from COMBINER (https://github.com/cambridge-mlg/combiner)
 # These functions process data into Fourier embedded coords and signal values
 def make_coord_grid(shape, range, device=None):

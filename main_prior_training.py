@@ -176,8 +176,6 @@ def main():
                     print("Training RMSD %.4f" % (np.mean(mses**0.5)*25) + "; Training KL %.4f" % kls, flush=True) # do not forget to scale back by 25
             
                 # save checkpoints
-
-
                 # get average log_scale of all training instances
                 average_training_log_scale = prior_model.log_scale.clone().detach().mean(0)
                 average_training_lpe_log_scale = prior_model.lpe_log_scale.clone().detach().mean([0]).flatten()
