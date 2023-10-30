@@ -24,7 +24,7 @@ Please refer to ```./data/Readme.md```.
 
 ## Execution
 
-### Training RECOMBINER
+- **Training RECOMBINER**
 
 
  
@@ -32,7 +32,7 @@ Please refer to ```./data/Readme.md```.
 python main_prior_training.py [--seed] [--train_dir] [--train_size] [--dataset] [--device] [--max_bitrate] [--saving_dir]
 ```
 
-### Compression Test Data Points
+- **Compression Test Data Points**
 
 
 ## Hyperparameters
