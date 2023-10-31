@@ -164,7 +164,7 @@ class PriorBNNmodel(nn.Module):
                                                     sample_size=1,
                                                     hierarchical_patch_nums=self.hierarchical_patch_nums,
                                                     patch_nums=self.patch_nums,
-                                                    data_dim=self.data_dim)[:, 0, ...]
+                                                    data_dim=self.data_dim)[:, 0, ...] # only have one sample, so squeeze the sample_size dimension
         for idx in range(self.n_layers):
             if gradient_through_A:
                 A = linear_transform.A[idx]
@@ -284,7 +284,7 @@ def get_grouping_by_kl(kls_bits):
     n_groups = len(result)
     param2group = np.concatenate([np.array(i) for i in result])
     group2param = np.argsort(param2group)
-    group_idx = np.concatenate([np.array([i, ] * len(result[i])) for i in range(len(result))])
+    group_idx = np.concatenate([np.array([i, ] * len(result[i])) for i in range(len(result))]).astype(int)
     group_start_index = []
     group_end_index = []
     cursor = 0

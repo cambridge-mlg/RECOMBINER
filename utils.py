@@ -205,7 +205,21 @@ def map_hierarchical_model_to_int_weights(use_hierarchical_model,
     
     return sample_h_w
 
-
+def metric(original, compressed, dataset):
+    """
+    This function calculate the metric results. This function will be called when compressing a test datapoint.
+    """
+    if dataset == 'cifar':
+        return batch_PSNR(original, compressed, round=True, max_value=1)
+    if dataset == 'kodak':
+        return PSNR(original, compressed, round=True, max_value=1)
+    if dataset == 'video':
+        return PSNR(original, compressed, round=True, max_value=1)
+    if dataset == 'audio':
+        return PSNR(original, compressed, round=False, max_value=1)
+    if dataset == 'protein':
+        return batch_RMSD(original, compressed, scale_factor=25)
+    
 def count_layer_params(in_dim, out_dim):
     """
     This function counts parameter size for a linear layer

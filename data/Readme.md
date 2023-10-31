@@ -3,25 +3,25 @@
 
 
 
-### Kodak
+## Kodak
 
 Please put training images and test images into ```train_dir``` and ```test_dir``` respectively.
 For the training set, we suggest using [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/). 
 To align with the resolution of Kodak, the training images should be randomly cropped into patches with resolution of 512x768 or 768x512.
 
 
-### CIFAR-10
+## CIFAR-10
 
 Please put training images and test images into ```train_dir``` and ```test_dir``` respectively.
 
-### Video (UCF-101)
+## Video (UCF-101)
 
 First put training and test clips into ```train_dir``` and ```test_dir```.
 Then call ```data.video.process_video_datasets``` to process training and test datasets.
 The processed video tensor will be saved in binary files in the specified directory.
 
 
-### Audio (LibriSpeech)
+## Audio (LibriSpeech)
 
 First put the test clips into ```LibriSpeech/test-clean```. Then call ```data.audio.process_audio_datasets``` to process training and test datasets.
 This function will download LibriSpeech training set automatically and process the training & test sets in binary files in the specified directory. Note, that to reduce running time and saving space, the function directly thin the training set.
@@ -41,13 +41,13 @@ We provide the 24 test data instances we used in the paper in ```test-clean.zip`
 ```
 
 
-### 3D Protein Structure
+## 3D Protein Structure
 
 First put training and test PDB files into ```train_dir``` and ```test_dir```.
 Then call ```data.protein.process_protein_datasets``` to process training and test datasets.
 The processed video tensor will be saved in binary files in the specified directory.
 
 
-### Self-defined dataset
+## Self-defined dataset
 
-Please update ```../config.py```, add ```xxx.py``` for the processing of the new dataset to current folder, and update ```load_data.py```. If the data modality has dimensionality higher than 3, please consider update function ```map_hierarchical_model_to_int_weights``` in ```../utils.py```.
+Please update ```../config.py``` and  ```load_data.py```, and add ```xxx.py``` for the processing of the new dataset to current folder. If the data modality has dimensionality higher than 3, please consider update function ```map_hierarchical_model_to_int_weights``` in ```../utils.py```.

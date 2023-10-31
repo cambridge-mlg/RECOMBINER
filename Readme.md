@@ -36,6 +36,7 @@ python main_prior_training.py [--seed] [--train_dir] [--train_size] [--dataset] 
 
 
 ## Hyperparameters
+You can also adjust the hyperparameters by modifying ```config.py```
 
 ## Citation
 Please consider citing the following paper if you use this repo.
