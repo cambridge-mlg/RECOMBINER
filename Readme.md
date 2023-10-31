@@ -34,6 +34,9 @@ python main_prior_training.py [--seed] [--train_dir] [--train_size] [--dataset] 
 
 - **Compression Test Data Points**
 
+```
+python main_compression.py [--seed] [--test_dir] [--test_idx] [--dataset] [--device] [--prior_path] [--save_dir]
+```
 
 ## Hyperparameters
 You can also adjust the hyperparameters by modifying ```config.py```

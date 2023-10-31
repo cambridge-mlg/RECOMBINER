@@ -16,8 +16,8 @@ def parse_args():
     parser.add_argument('--test_idx', type=int, required=True) 
     parser.add_argument("--dataset", choices=("cifar", "kodak", "video", "audio", "protein"), )
     parser.add_argument("--device", default="cuda")
-    parser.add_argument("--prior_path", required=True)
-    parser.add_argument("--save_dir", required=True)
+    parser.add_argument("--prior_path", required=True, help='path of the learned prior, linear transform and upsampling net.')
+    parser.add_argument("--save_dir", required=True, help='dir to save the compress files.')
     args = parser.parse_args()
     return args
 
