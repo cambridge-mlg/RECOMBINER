@@ -74,3 +74,64 @@ def load_training_set(train_dir,
                                     patch_sizes)
 
     return X, Y
+
+
+
+def load_test_set(test_dir, 
+                  test_idx,
+                  dataset, 
+                  feature_size,
+                  patch, 
+                  patch_sizes):
+    if dataset == 'cifar':
+        images = sorted(os.listdir(test_dir))
+        data_paths = []
+        for img_name in images:
+            image_path = test_dir + "/" + img_name
+            data_paths.append(image_path)
+            test_start_idx = test_idx * 500
+            test_end_idx = test_idx * 500 + 500
+        test_images_path = data_paths[test_start_idx: test_end_idx]
+        X, Y = image.load_image(test_images_path, 
+                                feature_size,
+                                patch, 
+                                patch_sizes)
+    if dataset == 'kodak':
+        images = sorted(os.listdir(test_dir))
+        data_paths = []
+        for img_name in images:
+            image_path = test_dir + "/" + img_name
+            data_paths.append(image_path)
+            test_start_idx = test_idx * 1
+            test_end_idx = test_idx * 1 + 1
+        test_images_path = data_paths[test_start_idx: test_end_idx]
+        X, Y = image.load_image(test_images_path, 
+                                feature_size,
+                                patch, 
+                                patch_sizes)
+    if dataset == 'audio':
+        with open(test_dir + '/test_dataset.pkl', 'wb') as f:
+            test_tensor = pickle.load(f)
+        X, Y = audio.load_audio([test_tensor[test_idx]], 
+                                feature_size,
+                                patch, 
+                                patch_sizes)
+    if dataset == 'video':
+        with open(test_dir + '/test_dataset.pkl', 'wb') as f:
+            test_tensor = pickle.load(f)
+        X, Y = video.load_video([test_tensor[test_idx]], 
+                                feature_size,
+                                patch, 
+                                patch_sizes)
+    if dataset == 'protein':
+        with open(test_dir + '/test_dataset.pkl', 'wb') as f:
+            test_tensor = pickle.load(f)
+        test_start_idx = test_idx * 1000
+        test_end_idx = test_idx * 1000 + 1000
+        test_tensor = test_tensor[test_start_idx: test_end_idx]
+        X, Y = protein.load_protein(test_tensor, 
+                                    feature_size,
+                                    patch, 
+                                    patch_sizes)
+
+    return X, Y

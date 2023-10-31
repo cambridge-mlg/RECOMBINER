@@ -820,12 +820,13 @@ class TestBNNmodel(nn.Module):
                             "AVE %.3f" % kl_bits.mean(), 
                             flush=True)
 
+        with torch.no_grad():
+            y_pred = self.predict(x.to(self.device)).cpu()
+            y_ori = y.cpu()
+            distortion = metric(y_ori.numpy(), y_pred.numpy(), self.dataset)
         if verbose:
-            with torch.no_grad():
-                y_pred = self.predict(x.to(self.device)).cpu()
-                y_ori = y.cpu()
-                distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
-            print("Optimization Finished. Average Distortion %.4f" % distortion, flush=True)
+            print("Optimization Finished. Average Distortion %.4f" % np.mean(distortion), flush=True)
+        return distortion
 
 
 
