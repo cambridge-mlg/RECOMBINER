@@ -204,10 +204,10 @@ def main():
                     q_loc, q_scale, p_loc, p_scale)
                 
                 if config['patch']:
-                    h_p_loc = torch.cat([prior_h_loc])
-                    h_p_scale = torch.cat([prior_h_scale])
-                    h_q_loc = torch.cat([prior_model.h_loc], -1)
-                    h_q_scale = torch.cat([prior_model.st(prior_model.h_log_scale)], -1)
+                    h_p_loc = prior_h_loc
+                    h_p_scale = prior_h_scale
+                    h_q_loc = prior_model.h_loc
+                    h_q_scale = prior_model.st(prior_model.h_log_scale)
 
                     h_group_idx, \
                     h_group_start_index, \
@@ -222,10 +222,10 @@ def main():
                         h_p_loc, 
                         h_p_scale)
                     
-                    hh_p_loc = torch.cat([prior_hh_loc])
-                    hh_p_scale = torch.cat([prior_hh_scale])
-                    hh_q_loc = torch.cat([prior_model.hh_loc], -1)
-                    hh_q_scale = torch.cat([prior_model.st(prior_model.hh_log_scale)], -1)
+                    hh_p_loc = prior_hh_loc
+                    hh_p_scale = prior_hh_scale
+                    hh_q_loc = prior_model.hh_loc
+                    hh_q_scale = prior_model.st(prior_model.hh_log_scale)
                     hh_group_idx, \
                     hh_group_start_index, \
                     hh_group_end_index, \
@@ -299,7 +299,7 @@ def main():
                     (h_p_loc,
                      h_p_scale,
                      kl_beta,
-                     torch.cat([average_training_h_log_scale])),
+                     average_training_h_log_scale),
                     f)
                 pickle.dump(
                     (hh_group_idx,
@@ -315,7 +315,7 @@ def main():
                     (hh_p_loc,
                      hh_p_scale,
                      kl_beta,
-                     torch.cat([average_training_hh_log_scale])),
+                     average_training_hh_log_scale),
                     f)
                 pickle.dump(linear_transform, f)
                 pickle.dump(upsample_net, f)
