@@ -42,7 +42,7 @@ def main():
                              number_of_entire_training_instances,
                              config['fourier_dim'],
                              config['patch'], 
-                             config['patch_sizes'])
+                             config['pixel_sizes'])
     X = X.to(args.device)
     Y = Y.to(args.device)
     train_size = X.shape[0]
@@ -239,6 +239,10 @@ def main():
                         hh_p_loc, 
                         hh_p_scale)
                 else:
+                    h_p_loc = None
+                    h_p_scale = None
+                    h_q_loc = None
+                    h_q_scale = None
                     h_group_idx = None
                     h_group_start_index = None
                     h_group_end_index = None
@@ -247,6 +251,10 @@ def main():
                     h_n_groups = None
                     h_group_kls = None
                     h_weights = None
+                    hh_p_loc = None
+                    hh_p_scale = None
+                    hh_q_loc = None
+                    hh_q_scale = None
                     hh_group_idx = None
                     hh_group_start_index = None
                     hh_group_end_index = None

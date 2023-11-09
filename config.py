@@ -40,7 +40,7 @@ configs = {'cifar':
             'latent_dim':128,
             'fourier_dim': 16,
             'paddings': [2, 1, 1],
-            'scale_factors': [4, 2, 2], 
+            'layerwise_scale_factors': [4, 2, 2], 
             'upsample_factors':[16, 16], 
             # other parameters
             'bitrate_range': 0.3,

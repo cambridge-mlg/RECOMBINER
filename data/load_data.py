@@ -1,7 +1,7 @@
-import audio
-import image
-import protein
-import video
+import data.audio as audio
+import data.image as image
+import data.protein as protein
+import data.video as video
 
 import os
 import numpy as np

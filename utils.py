@@ -35,7 +35,7 @@ def map_lpe_to_inr_inputs(upsample_net,
         patch_nums: patch number along each dimension
         data_dim: data point dimensionality, e.g., 3 for video, 2 for image, 1 for audio
     """
-    sample_size, data_num = latent_pe.shape[0:1]
+    sample_size, data_num = latent_pe.shape[0:2]
     latent_pe_dims = [pixel_sizes[i] // upsample_factors[i] for i in range(data_dim)]
 
     # reshape latent_pe into spatial dimensions

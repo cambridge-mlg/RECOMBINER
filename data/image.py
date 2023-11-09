@@ -53,7 +53,7 @@ def load_image(image_paths, feature_size, patch, patch_sizes):
         x, y = get_image_pair(i,
                               feature_size=feature_size,
                               patch=patch,
-                              patch_size=patch_sizes
+                              patch_sizes=patch_sizes
                               )
         if patch:
             X.append(x)

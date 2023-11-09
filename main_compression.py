@@ -72,7 +72,7 @@ def main():
                          args.dataset,
                          config['fourier_dim'],
                          config['patch'], 
-                         config['patch_sizes']
+                         config['pixel_sizes']
                          )
     x = x.to(device)
     y = y.to(device)

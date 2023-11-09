@@ -236,8 +236,6 @@ class PriorBNNmodel(nn.Module):
             mse = torch.mean((y_hat - y) ** 2) * y.shape[0]  # number of images
             kl = self.calculate_kl(prior_loc,
                                    prior_scale,
-                                   prior_loc,
-                                   prior_scale,
                                    prior_lpe_loc,
                                    prior_lpe_scale,
                                    prior_h_loc,
