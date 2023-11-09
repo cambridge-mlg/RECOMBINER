@@ -190,12 +190,12 @@ class PriorBNNmodel(nn.Module):
                      ):
         kls = kl_divergence(Normal(self.loc, self.st(self.log_scale)),
                             Normal(prior_loc, prior_scale)).sum()
-        kls = kl_divergence(Normal(self.lpe_loc, self.st(self.lpe_log_scale)),
+        kls += kl_divergence(Normal(self.lpe_loc, self.st(self.lpe_log_scale)),
                             Normal(prior_lpe_loc, prior_lpe_scale)).sum()
         if self.patch:
-            kls = kl_divergence(Normal(self.h_loc, self.st(self.h_log_scale)),
+            kls += kl_divergence(Normal(self.h_loc, self.st(self.h_log_scale)),
                                 Normal(prior_h_loc, prior_h_scale)).sum()
-            kls = kl_divergence(Normal(self.hh_loc, self.st(self.hh_log_scale)),
+            kls += kl_divergence(Normal(self.hh_loc, self.st(self.hh_log_scale)),
                                 Normal(prior_hh_loc, prior_hh_scale)).sum()
         return kls
 
