@@ -45,7 +45,7 @@ We provide the 24 test data instances we used in the paper in ```test-clean.zip`
 
 First put training and test PDB files into ```train_dir``` and ```test_dir```.
 Then call ```data.protein.process_protein_datasets``` to process training and test datasets.
-The processed video tensor will be saved in binary files in the specified directory.
+The processed video tensor will be saved in binary files in the specified directory. Note that the arguments to this function is training file paths (list of str), test file paths (list of str) and saving dir (str).
 
 
 ## Self-defined dataset
