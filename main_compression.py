@@ -49,22 +49,27 @@ def main():
     _p_locs = p_locs[param2group].to(device)
     p_log_scales = torch.log(torch.exp(prior_scale * 6) - 1).clone()
     _p_log_scales = p_log_scales[param2group].to(device)
+    _average_training_log_scale = average_training_log_scale[param2group].cpu().detach()
     
     if config['patch']:
         h_p_locs = h_prior_loc.clone()
         _h_p_locs = h_p_locs[h_param2group].to(device)
         h_p_log_scales = torch.log(torch.exp(h_prior_scale * 6) - 1).clone()
         _h_p_log_scales = h_p_log_scales[h_param2group].to(device)
+        _h_average_training_log_scale = h_average_training_log_scale[h_param2group].cpu().detach()
 
         hh_p_locs = hh_prior_loc.clone()
         _hh_p_locs = hh_p_locs[hh_param2group].to(device)
         hh_p_log_scales = torch.log(torch.exp(hh_prior_scale * 6) - 1).clone()
         _hh_p_log_scales = hh_p_log_scales[hh_param2group].to(device)
+        _hh_average_training_log_scale = hh_average_training_log_scale[hh_param2group].cpu().detach()
     else:
         _h_p_locs = None
         _h_p_log_scales = None
+        _h_average_training_log_scale = None
         _hh_p_locs = None
         _hh_p_log_scales = None
+        _hh_average_training_log_scale = None
 
     # load test data
     x, y = load_test_set(args.test_dir, 
@@ -99,7 +104,7 @@ def main():
 
         p_loc=_p_locs,
         p_log_scale=_p_log_scales,
-        init_log_scale=average_training_log_scale[param2group].cpu().detach(),
+        init_log_scale=_average_training_log_scale,
         param_to_group=param2group,
         group_to_param=group2param,
         n_groups=n_groups,
@@ -109,7 +114,7 @@ def main():
 
         h_p_loc=_h_p_locs,
         h_p_log_scale=_h_p_log_scales,
-        h_init_log_scale=h_average_training_log_scale[h_param2group].cpu().detach(),
+        h_init_log_scale=_h_average_training_log_scale,
         h_param_to_group=h_param2group,
         h_group_to_param=h_group2param,
         h_n_groups=h_n_groups,
@@ -119,7 +124,7 @@ def main():
 
         hh_p_loc=_hh_p_locs,
         hh_p_log_scale=_hh_p_log_scales,
-        hh_init_log_scale=hh_average_training_log_scale[hh_param2group].cpu().detach(),
+        hh_init_log_scale=_hh_average_training_log_scale,
         hh_param_to_group=hh_param2group,
         hh_group_to_param=hh_group2param,
         hh_n_groups=hh_n_groups,
@@ -135,21 +140,21 @@ def main():
         kl_upper_buffer=0.,
         kl_lower_buffer=0.4,
         kl_adjust_gap=10,
-        initial_beta=1e-8,
+        initial_beta=kl_beta,
         beta_step_size=0.05
     ).to(device)
 
     recombiner.optimize_posteriors(x,
                                     y,
-                                    n_epoch_kl=30000,
+                                    n_epochs=30000,
                                     lr=2e-4,
                                     verbose=1
                                     )
     distortion = recombiner.compress_posteriors(x,
                                                 y,
                                                 n_epochs_finetune=max(30000 // n_groups, 50),
-                                                h_n_epochs_finetune=max(15000 // h_n_groups, 20),
-                                                hh_n_epochs_finetune=max(15000 // hh_n_groups, 20),
+                                                h_n_epochs_finetune=None if h_n_groups == None else max(15000 // h_n_groups, 20),
+                                                hh_n_epochs_finetune=None if hh_n_groups == None else max(15000 // hh_n_groups, 20),
                                                 verbose=1,
                                                 lr=2e-4,
                                                 fine_tune_gap=1,
@@ -161,13 +166,14 @@ def main():
     np.savetxt(args.save_dir + file_name, distortion, delimiter=",")
 
     file_name = "GroupIndex_test_id_%d" % args.test_idx + ".csv"
-    np.savetxt(args.save_dir + file_name, recombiner.compressed_idx, delimiter=",")
+    np.savetxt(args.save_dir + file_name, recombiner.compressed_idx_groupwise, delimiter=",")
 
-    file_name = "H_GroupIndex_test_id_%d" % args.test_idx + ".csv"
-    np.savetxt(args.save_dir + file_name, recombiner.h_compressed_idx, delimiter=",")
+    if config['patch']:
+        file_name = "H_GroupIndex_test_id_%d" % args.test_idx + ".csv"
+        np.savetxt(args.save_dir + file_name, recombiner.h_compressed_idx_groupwise, delimiter=",")
 
-    file_name = "HH_GroupIndex_test_id_%d" % args.test_idx + ".csv"
-    np.savetxt(args.save_dir + file_name, recombiner.hh_compressed_idx, delimiter=",")
+        file_name = "HH_GroupIndex_test_id_%d" % args.test_idx + ".csv"
+        np.savetxt(args.save_dir + file_name, recombiner.hh_compressed_idx_groupwise, delimiter=",")
 
 if __name__ == '__main__':
     main()

@@ -265,7 +265,6 @@ def main():
                     hh_weights = None
 
 
-
             # save
             file_name = "PRIOR_train_size_%d" % train_size + "_max_bitrate=%.3f.pkl" % args.max_bitrate
             with open(args.saving_dir + file_name, "wb") as f:

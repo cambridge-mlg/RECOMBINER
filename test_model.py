@@ -314,18 +314,23 @@ class TestBNNmodel(nn.Module):
         loc = loc[:, :self.cum_param_sizes[-1]]
         scale = scale[:, :self.cum_param_sizes[-1]]
 
-        h_loc = self.h_loc * (1 - self.h_compressed_mask) + self.h_compressed_sample * self.h_compressed_mask
-        h_scale = self.st(self.h_log_scale) * (1 - self.h_compressed_mask) + self.h_compressed_sample_std * self.h_compressed_mask
         if self.patch:
+            h_loc = self.h_loc * (1 - self.h_compressed_mask) + self.h_compressed_sample * self.h_compressed_mask
+            h_scale = self.st(self.h_log_scale) * (1 - self.h_compressed_mask) + self.h_compressed_sample_std * self.h_compressed_mask
             h_loc = h_loc[self.h_permute_patch_x_g2p, self.h_permute_patch_y_g2p]
             h_scale = h_scale[self.h_permute_patch_x_g2p, self.h_permute_patch_y_g2p]
-        h_loc = h_loc[:, self.h_group_to_param]
-        h_scale = h_scale[:, self.h_group_to_param] 
+            h_loc = h_loc[:, self.h_group_to_param]
+            h_scale = h_scale[:, self.h_group_to_param] 
 
-        hh_loc = self.hh_loc * (1 - self.hh_compressed_mask) + self.hh_compressed_sample * self.hh_compressed_mask
-        hh_scale = self.st(self.hh_log_scale) * (1 - self.hh_compressed_mask) + self.hh_compressed_sample_std * self.hh_compressed_mask
-        hh_loc = hh_loc[:, self.hh_group_to_param]
-        hh_scale = hh_scale[:, self.hh_group_to_param]
+            hh_loc = self.hh_loc * (1 - self.hh_compressed_mask) + self.hh_compressed_sample * self.hh_compressed_mask
+            hh_scale = self.st(self.hh_log_scale) * (1 - self.hh_compressed_mask) + self.hh_compressed_sample_std * self.hh_compressed_mask
+            hh_loc = hh_loc[:, self.hh_group_to_param]
+            hh_scale = hh_scale[:, self.hh_group_to_param]
+        else:
+            h_loc = None
+            h_scale = None
+            hh_loc = None
+            hh_scale = None
 
         h_w = map_hierarchical_model_to_int_weights(use_hierarchical_model=self.patch,
                                                     loc=loc, scale=scale,
@@ -515,7 +520,7 @@ class TestBNNmodel(nn.Module):
 
             # sample gumbel noise
             if self.g_samples == None:
-                self.get_time_sample()
+                self.get_gumbel_sample()
             log_w = log_w + self.g_samples.to(log_w.device)[:group_sample_size]
 
             # encode the sample
@@ -542,7 +547,7 @@ class TestBNNmodel(nn.Module):
             log_w = log_q_samples - log_p_samples
 
             if self.g_samples == None:
-                self.get_time_sample()
+                self.get_gumbel_sample()
             log_w = log_w + self.g_samples.to(log_w.device)[:group_sample_size]
 
             assert len(log_w.shape) == 1
@@ -568,7 +573,7 @@ class TestBNNmodel(nn.Module):
             log_w = log_q_samples - log_p_samples
 
             if self.g_samples == None:
-                self.get_time_sample()
+                self.get_gumbel_sample()
             log_w = log_w + self.g_samples.to(log_w.device)[:group_sample_size]
 
             assert len(log_w.shape) == 1
@@ -634,6 +639,19 @@ class TestBNNmodel(nn.Module):
                 y_ori = y.cpu()
                 distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
             print("Initialization: Average Distortion %.4f" % distortion, flush=True)
+            if self.patch:
+                kls, h_kls, hh_kls = self.update_annealing_factors(False)
+                kl_bits = kls / np.log(2.)
+                h_kl_bits = h_kls / np.log(2.)
+                hh_kl_bits = hh_kls / np.log(2.)
+                kl_bits = np.concatenate([kl_bits.reshape(-1), 
+                                          h_kl_bits.reshape(-1), 
+                                          hh_kl_bits.reshape(-1)])
+            else:            
+                kls = self.update_annealing_factors(False)
+                kl_bits = kls / np.log(2.)
+            print("Bits per group: ave %.2f" % kl_bits.mean() + " max %.2f" % kl_bits.max(), flush=True)
+            print(' ')
             print("Start to optimize posteriors...", flush=True)
 
         optimizer = Adam(self.parameters(), lr=lr)
@@ -650,7 +668,6 @@ class TestBNNmodel(nn.Module):
                 y_ori = y.cpu()
                 distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
             print("Optimization Finished. Average Distortion %.4f" % distortion, flush=True)
-
             if self.patch:
                 kls, h_kls, hh_kls = self.update_annealing_factors(False)
                 kl_bits = kls / np.log(2.)
@@ -791,8 +808,7 @@ class TestBNNmodel(nn.Module):
                     kl_bits[mask] = -1e10
                     group_idx = kl_bits.argmax()
                 self.compress_group(row_idx, group_idx)
-                self.compressed_num += 1
-
+            self.compressed_num += 1
             if self.compressed_num % fine_tune_gap == 0:
                 optimizer = Adam(self.parameters(), lr=lr) # reinitialize the momentums
                 self.train(x, 
@@ -814,10 +830,10 @@ class TestBNNmodel(nn.Module):
                     kl_bits /= np.log(2.)
                     mask = (self.compressed_mask_groupwise == False)
                     kl_bits = kl_bits.flatten()[mask.flatten()]
-                    print("Compress progress: %d" % (100 * self.compressed_num / self.n_groups),
-                            "Average Distortion %.4f" % distortion, 
+                    print("Compress progress: %d; " % (100 * self.compressed_num / self.n_groups),
+                            "Average Distortion %.4f; " % distortion, 
                             "KL in uncompressed groups: MAX %.3f" % kl_bits.max(), 
-                            "AVE %.3f" % kl_bits.mean(), 
+                            "AVE %.3f. " % kl_bits.mean(), 
                             flush=True)
 
         with torch.no_grad():
