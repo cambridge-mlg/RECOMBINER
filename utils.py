@@ -1,11 +1,3 @@
-"""
-Last update on 25-Oct-2023
-
-
-
-"""
-
-
 import numpy as np
 import torch
 
@@ -157,8 +149,8 @@ def map_hierarchical_model_to_int_weights(use_hierarchical_model,
 
         # reshape and repeat level 2
         number_of_groups = [patch_nums[i]//hierarchical_patch_nums['level2'][i] for i in range(data_dim)]
-        h_loc = h_loc.reshape(data_num, *number_of_groups, -1)
-        h_scale = h_scale.reshape(data_num, *number_of_groups, -1)
+        h_loc = h_loc.reshape(-1, *number_of_groups, h_loc.shape[-1])
+        h_scale = h_scale.reshape(-1, *number_of_groups, h_scale.shape[-1])
         if data_dim == 1:
             h_loc = h_loc[:, :, None, :].repeat([1, 1, hierarchical_patch_nums['level2'][0], 1])
             h_scale = h_scale[:, :, None, :].repeat([1, 1, hierarchical_patch_nums['level2'][0], 1])
@@ -185,7 +177,7 @@ def map_hierarchical_model_to_int_weights(use_hierarchical_model,
         else:
             raise NotImplementedError
         h_loc = h_loc.reshape([-1, h_loc.shape[-1]])[:, None, :]
-        h_scale = h_scale.reshape([-1, h_loc.shape[-1]])[:, None, :].reshape([1, sample_size, 1])
+        h_scale = h_scale.reshape([-1, h_loc.shape[-1]])[:, None, :].repeat([1, sample_size, 1])
         h = h_loc + torch.randn_like(h_scale) * h_scale
 
         # reshape and repeat level 3. Note, that level 3 only have a global representation   

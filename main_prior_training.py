@@ -73,8 +73,13 @@ def main():
                              layerwise_scale_factors=config['layerwise_scale_factors']).to(device)
 
     kl_beta = 1e-8 # initial beta 
-    budget_max = args.max_bitrate * np.prod(config['pixel_sizes']) 
-    budget_min = max(config['lowest_bitrate'], (args.max_bitrate - config['bitrate_range'])) * np.prod(config['pixel_sizes']) 
+    if args.dataset != 'audio':
+        budget_max = args.max_bitrate * np.prod(config['pixel_sizes']) 
+        budget_min = max(config['lowest_bitrate'], (args.max_bitrate - config['bitrate_range'])) * np.prod(config['pixel_sizes']) 
+    else:
+        # note that the unit of audio is Kpbs. Not bits per xxx
+        budget_max = args.max_bitrate * np.prod(config['pixel_sizes']) * (3/48000) * 1000 # kbps * pixel per signal * sec per pixel
+        budget_min = max(config['lowest_bitrate'], (args.max_bitrate - config['bitrate_range'])) * np.prod(config['pixel_sizes']) * (3/48000) * 1000
     assert budget_min <= budget_max
 
     # initialize priors

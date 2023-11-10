@@ -101,7 +101,7 @@ def process_audio_datasets(save_dir):
     train_tensor = []
     for i in idx:
         if train_dataset[i].shape[-1] == 48000: # sanity check to ensure the length is 48000
-            train_tensor.append(train_dataset)
+            train_tensor.append(train_dataset[i])
 
     with open(save_dir + '/test_dataset.pkl', 'wb') as f:
         pickle.dump(test_tensor, f)

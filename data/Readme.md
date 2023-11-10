@@ -50,4 +50,4 @@ The processed video tensor will be saved in binary files in the specified direct
 
 ## Self-defined dataset
 
-Please update ```../config.py``` and  ```load_data.py```, and add ```xxx.py``` for the processing of the new dataset to current folder. If the data modality has dimensionality higher than 3, please consider update function ```map_hierarchical_model_to_int_weights``` in ```../utils.py```.
+Please update ```../config.py``` and  ```load_data.py```, and add ```xxx.py``` for the processing of the new dataset to current folder. If the data modality has dimensionality higher than 3, please consider update function ```map_hierarchical_model_to_int_weights``` in ```../utils.py```. If the bitrate for the new modality is not bit per pixel, you might also consider to modify the calculation of ```budget_max``` ```budget_min``` in file ```../main_prior_training.py``` (line 76-82).
