@@ -246,6 +246,8 @@ class TestBNNmodel(nn.Module):
             self.bpp = (self.n_groups * self.bit_per_group) / np.prod(pixel_sizes) + (self.h_n_groups * self.bit_per_group) / np.prod(pixel_sizes) / np.prod(self.hierarchical_patch_nums['level2']) + (self.hh_n_groups * self.bit_per_group) / np.prod(pixel_sizes) / np.prod(self.hierarchical_patch_nums['level3'])
         else:
             self.bpp = (self.n_groups * self.bit_per_group) / np.prod(pixel_sizes)
+        if self.dataset == 'audio':
+            self.bpp =  self.bpp / (3/48000) / 1000 
         print("Model Initialized. Expected bpp is %.2f" % self.bpp, flush=True)
 
         # prior samples for different data points are the same
