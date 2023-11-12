@@ -595,7 +595,7 @@ class TestBNNmodel(nn.Module):
     def h_compress_group(self, row_idx, group_idx):
 
         group_sample_size = int(np.ceil(2 ** self.bit_per_group))
-        i, z_i, log_w = self.h_sample_group_image(row_idx, group_idx, group_sample_size)
+        i, z_i, log_w = self.h_sample_group(row_idx, group_idx, group_sample_size)
         self.h_compressed_idx_groupwise[row_idx, group_idx] = i
         self.h_compressed_mask_groupwise[row_idx, group_idx] = True
         self.h_compressed_sample[row_idx, self.h_group_start_index[group_idx]: self.h_group_end_index[group_idx]] = z_i.clone()
@@ -607,7 +607,7 @@ class TestBNNmodel(nn.Module):
     def hh_compress_group(self, row_idx, group_idx):
 
         group_sample_size = int(np.ceil(2 ** self.bit_per_group))
-        i, z_i, log_w = self.hh_sample_group_image(row_idx, group_idx, group_sample_size)
+        i, z_i, log_w = self.hh_sample_group(row_idx, group_idx, group_sample_size)
         self.hh_compressed_idx_groupwise[row_idx, group_idx] = i
         self.hh_compressed_mask_groupwise[row_idx, group_idx] = True
         self.hh_compressed_sample[row_idx, self.hh_group_start_index[group_idx]: self.hh_group_end_index[group_idx]] = z_i.clone()
