@@ -412,7 +412,7 @@ class TestBNNmodel(nn.Module):
             
             if self.patch:
                 h_new_kl_beta = self.h_kl_beta.clone()
-                h_mask = (h_kls / np.log(2.) > (self.bit_per_group + self.kl_buffer - self.kl_boundary)).astype(float)
+                h_mask = (h_kls / np.log(2.) > (self.bit_per_group + self.kl_upper_buffer)).astype(float)
                 h_new_kl_beta = h_new_kl_beta * torch.from_numpy(1 + self.beta_step_size * h_mask).float()
                 h_mask = (h_kls / np.log(2.) <= (self.bit_per_group - self.kl_lower_buffer)).astype(float)
                 h_new_kl_beta = h_new_kl_beta / torch.from_numpy(1 + self.beta_step_size * h_mask).float()
@@ -422,7 +422,7 @@ class TestBNNmodel(nn.Module):
                 self.h_kl_beta = torch.where(torch.from_numpy(h_update_mask).bool(), h_new_kl_beta, self.h_kl_beta)
 
                 hh_new_kl_beta = self.hh_kl_beta.clone()
-                hh_mask = (hh_kls / np.log(2.) > (self.bit_per_group + self.kl_buffer - self.kl_boundary)).astype(float)
+                hh_mask = (hh_kls / np.log(2.) > (self.bit_per_group + self.kl_upper_buffer)).astype(float)
                 hh_new_kl_beta = hh_new_kl_beta * torch.from_numpy(1 + self.beta_step_size * hh_mask).float()
                 hh_mask = (hh_kls / np.log(2.) <= (self.bit_per_group - self.kl_lower_buffer)).astype(float)
                 hh_new_kl_beta = hh_new_kl_beta / torch.from_numpy(1 + self.beta_step_size * hh_mask).float()
