@@ -106,26 +106,29 @@ def main():
     n_epoch = 200  # the first SGD epoch number
     n_em_iter = 550  # the total coordinate ascent iter number
 
+    ELBOs = []
+
     # coordinate descent loop
     for iter in tqdm(range(n_em_iter)):
         # train q and mappings
-        prior_model.train(n_epoch,
-                          2e-4,
-                          X,
-                          Y,
-                          prior_loc,
-                          prior_scale,
-                          prior_lpe_loc,
-                          prior_lpe_scale,
-                          prior_h_loc,
-                          prior_h_scale,
-                          prior_hh_loc,
-                          prior_hh_scale,
-                          linear_transform, 
-                          upsample_net,
-                          kl_beta,
-                          training_mappings=True, 
-                          verbose=False)
+        _, _, _ELBOs = prior_model.train(n_epoch,
+                                    2e-4,
+                                    X,
+                                    Y,
+                                    prior_loc,
+                                    prior_scale,
+                                    prior_lpe_loc,
+                                    prior_lpe_scale,
+                                    prior_h_loc,
+                                    prior_h_scale,
+                                    prior_hh_loc,
+                                    prior_hh_scale,
+                                    linear_transform, 
+                                    upsample_net,
+                                    kl_beta,
+                                    training_mappings=True, 
+                                    verbose=False)
+        ELBOs = ELBOs + _ELBOs
         n_epoch = 100  # after the first iteration, change epoch to 100
 
         # adjust kl beta
@@ -323,6 +326,10 @@ def main():
                     f)
                 pickle.dump(linear_transform, f)
                 pickle.dump(upsample_net, f)
+           
+            file_name = "LOSS_train_size_%d" % train_size + "_max_bitrate=%.3f.pkl" % args.max_bitrate
+            with open(args.saving_dir + file_name, "wb") as f:
+                pickle.dump(ELBOs, f)
 
 
 if __name__ == '__main__':

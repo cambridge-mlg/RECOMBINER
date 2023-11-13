@@ -226,8 +226,9 @@ class PriorBNNmodel(nn.Module):
         else:
             opt = Adam(self.parameters(), lr)
 
+        MSE = []
+        ELBO = []
         for i in range(n_epoch) if not verbose else tqdm(range(n_epoch)):
-            MSE = []
             y_hat = self.forward(x,
                                  linear_transform, 
                                  upsample_net,
@@ -249,6 +250,7 @@ class PriorBNNmodel(nn.Module):
             opt.step()
 
             MSE.append(mse.item())
+            ELBO.append(-loss.item())
         return MSE[-1] / y.shape[0], self.calculate_kl(prior_loc,
                                                         prior_scale,
                                                         prior_lpe_loc,
@@ -257,7 +259,7 @@ class PriorBNNmodel(nn.Module):
                                                         prior_h_scale,
                                                         prior_hh_loc,
                                                         prior_hh_scale,
-                                                        ).item() / y.shape[0]
+                                                        ).item() / y.shape[0], ELBO
 
 def get_grouping(q_loc, q_scale, prior_loc, prior_scale):
     """
