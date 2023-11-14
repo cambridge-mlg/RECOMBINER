@@ -166,7 +166,7 @@ def main():
     file_name = "Distortion_test_id_%d" % args.test_idx + ".csv"
     np.savetxt(args.save_dir + file_name, distortion, delimiter=",")
 
-    if args.save_bitstream:
+    if int(args.save_bitstream):
         file_name = "GroupIndex_test_id_%d" % args.test_idx + ".csv"
         np.savetxt(args.save_dir + file_name, recombiner.compressed_idx_groupwise, delimiter=",")
 
