@@ -18,6 +18,7 @@ def parse_args():
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--prior_path", required=True, help='path of the learned prior, linear transform and upsampling net.')
     parser.add_argument("--save_dir", required=True, help='dir to save the compress files.')
+    parser.add_argument("--save_bitstream", default=True)
     args = parser.parse_args()
     return args
 
@@ -165,15 +166,16 @@ def main():
     file_name = "Distortion_test_id_%d" % args.test_idx + ".csv"
     np.savetxt(args.save_dir + file_name, distortion, delimiter=",")
 
-    file_name = "GroupIndex_test_id_%d" % args.test_idx + ".csv"
-    np.savetxt(args.save_dir + file_name, recombiner.compressed_idx_groupwise, delimiter=",")
+    if args.save_bitstream:
+        file_name = "GroupIndex_test_id_%d" % args.test_idx + ".csv"
+        np.savetxt(args.save_dir + file_name, recombiner.compressed_idx_groupwise, delimiter=",")
 
-    if config['patch']:
-        file_name = "H_GroupIndex_test_id_%d" % args.test_idx + ".csv"
-        np.savetxt(args.save_dir + file_name, recombiner.h_compressed_idx_groupwise, delimiter=",")
+        if config['patch']:
+            file_name = "H_GroupIndex_test_id_%d" % args.test_idx + ".csv"
+            np.savetxt(args.save_dir + file_name, recombiner.h_compressed_idx_groupwise, delimiter=",")
 
-        file_name = "HH_GroupIndex_test_id_%d" % args.test_idx + ".csv"
-        np.savetxt(args.save_dir + file_name, recombiner.hh_compressed_idx_groupwise, delimiter=",")
+            file_name = "HH_GroupIndex_test_id_%d" % args.test_idx + ".csv"
+            np.savetxt(args.save_dir + file_name, recombiner.hh_compressed_idx_groupwise, delimiter=",")
 
 if __name__ == '__main__':
     main()
