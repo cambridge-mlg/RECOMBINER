@@ -76,13 +76,13 @@ def random_crop1d(data, patch_shape: int):
     ]
 
 # process audio data
-def process_audio_datasets(save_dir):
+def process_audio_datasets(save_dir, download_test=False):
     test_dataset = LIBRISPEECH(
             root="./",
             url='test-clean',
             patch_shape=48000,
             num_secs=3,
-            download=False,
+            download=download_test,
         )
     test_tensor = list(test_dataset)
 
