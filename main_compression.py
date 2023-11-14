@@ -99,8 +99,8 @@ def main():
         dataset=args.dataset,
 
         # learned mappings and priors
-        linear_transform=linear_transform,
-        upsample_net=upsample_net,
+        linear_transform=linear_transform.to(device),
+        upsample_net=upsample_net.to(device),
 
         p_loc=_p_locs,
         p_log_scale=_p_log_scales,

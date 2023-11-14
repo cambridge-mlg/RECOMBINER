@@ -185,11 +185,11 @@ def main():
             
                 # save checkpoints
                 # get average log_scale of all training instances
-                average_training_log_scale = prior_model.log_scale.clone().detach().mean(0)
-                average_training_lpe_log_scale = prior_model.lpe_log_scale.clone().detach().mean([0]).flatten()
+                average_training_log_scale = prior_model.log_scale.clone().detach().mean(0).cpu()
+                average_training_lpe_log_scale = prior_model.lpe_log_scale.clone().detach().mean([0]).flatten().cpu()
                 if config['patch']:
-                    average_training_h_log_scale = prior_model.h_log_scale.clone().detach().mean([0]).flatten()
-                    average_training_hh_log_scale = prior_model.hh_log_scale.clone().detach().mean([0]).flatten()
+                    average_training_h_log_scale = prior_model.h_log_scale.clone().detach().mean([0]).flatten().cpu()
+                    average_training_hh_log_scale = prior_model.hh_log_scale.clone().detach().mean([0]).flatten().cpu()
                 else:
                     average_training_h_log_scale = None
                     average_training_hh_log_scale = None
@@ -246,6 +246,13 @@ def main():
                         hh_q_scale, 
                         hh_p_loc, 
                         hh_p_scale)
+                    
+                    h_p_loc = h_p_loc.cpu()
+                    h_p_scale = h_p_scale.cpu()
+                    hh_p_loc = hh_p_loc.cpu()
+                    hh_p_scale = hh_p_scale.cpu()
+
+
                 else:
                     h_p_loc = None
                     h_p_scale = None
@@ -287,8 +294,8 @@ def main():
                      weights),
                     f)
                 pickle.dump(
-                    (p_loc,
-                     p_scale,
+                    (p_loc.cpu(),
+                     p_scale.cpu(),
                      kl_beta,
                      torch.cat([average_training_log_scale, average_training_lpe_log_scale])),
                     f)
@@ -324,8 +331,8 @@ def main():
                      kl_beta,
                      average_training_hh_log_scale),
                     f)
-                pickle.dump(linear_transform, f)
-                pickle.dump(upsample_net, f)
+                pickle.dump(linear_transform.cpu(), f)
+                pickle.dump(upsample_net.cpu(), f)
            
             file_name = "LOSS_train_size_%d" % train_size + "_max_bitrate=%.3f.pkl" % args.max_bitrate
             with open(args.saving_dir + file_name, "wb") as f:
