@@ -40,6 +40,8 @@ We provide the 24 test data instances we used in the paper in ```test-clean.zip`
             ...
 ```
 
+We also provide the option to test on the full test set by specifying ```download_test=True``` in ```data.audio.process_audio_datasets```.
+
 
 ## 3D Protein Structure
 
