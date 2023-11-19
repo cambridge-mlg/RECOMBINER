@@ -247,15 +247,15 @@ def main():
                         hh_p_loc, 
                         hh_p_scale)
                     
-                    save_h_p_loc = h_p_loc.cpu()
-                    save_h_p_scale = h_p_scale.cpu()
-                    save_hh_p_loc = hh_p_loc.cpu()
-                    save_hh_p_scale = hh_p_scale.cpu()
+                    h_p_loc = h_p_loc.cpu()
+                    h_p_scale = h_p_scale.cpu()
+                    hh_p_loc = hh_p_loc.cpu()
+                    hh_p_scale = hh_p_scale.cpu()
 
 
                 else:
-                    save_h_p_loc = None
-                    save_h_p_scale = None
+                    h_p_loc = None
+                    h_p_scale = None
                     h_q_loc = None
                     h_q_scale = None
                     h_group_idx = None
@@ -266,8 +266,8 @@ def main():
                     h_n_groups = None
                     h_group_kls = None
                     h_weights = None
-                    save_hh_p_loc = None
-                    save_hh_p_scale = None
+                    hh_p_loc = None
+                    hh_p_scale = None
                     hh_q_loc = None
                     hh_q_scale = None
                     hh_group_idx = None
@@ -310,8 +310,8 @@ def main():
                      h_weights),
                     f)
                 pickle.dump(
-                    (save_h_p_loc,
-                     save_h_p_scale,
+                    (h_p_loc,
+                     h_p_scale,
                      kl_beta,
                      average_training_h_log_scale),
                     f)
@@ -326,14 +326,16 @@ def main():
                      hh_weights),
                     f)
                 pickle.dump(
-                    (save_hh_p_loc,
-                     save_hh_p_scale,
+                    (hh_p_loc,
+                     hh_p_scale,
                      kl_beta,
                      average_training_hh_log_scale),
                     f)
                 pickle.dump(linear_transform.cpu(), f)
                 pickle.dump(upsample_net.cpu(), f)
-           
+                
+            linear_transform.to(args.device)
+            upsample_net.to(args.device)
             file_name = "LOSS_train_size_%d" % train_size + "_max_bitrate=%.3f.pkl" % args.max_bitrate
             with open(args.saving_dir + file_name, "wb") as f:
                 pickle.dump(ELBOs, f)
