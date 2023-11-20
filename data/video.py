@@ -28,7 +28,7 @@ def process_video_datasets(train_paths, test_paths, save_dir):
             if video.shape[-1] >= 240 and video.shape[-2] >= 240:
                 video = transforms.CenterCrop([240, 240])(video)
                 video = transforms.Resize(size=[128, 128])(video)
-                video_tensor.append(video)
+                video_tensor.append(video/255)
         return video_tensor
     train_tensor = process(train_paths)
     test_tensor = process(test_paths)
