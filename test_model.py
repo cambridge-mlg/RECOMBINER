@@ -728,20 +728,23 @@ class TestBNNmodel(nn.Module):
                                )
                 if _i in hh_print_step:
                     if verbose:
-                        with torch.no_grad():
-                            y_pred = self.predict(x.to(self.device)).cpu()
-                            y_ori = y.cpu()
-                            distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
+                        try:
+                            with torch.no_grad():
+                                y_pred = self.predict(x.to(self.device)).cpu()
+                                y_ori = y.cpu()
+                                distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
 
-                        _, _, hh_kl_bits  = self.update_annealing_factors(False)
-                        hh_kl_bits /= np.log(2.)
-                        mask = (self.hh_compressed_mask_groupwise == False)
-                        kl_bits = hh_kl_bits.flatten()[mask.flatten()]
-                        print("Compress progress: %d" % (100 * self.hh_compressed_num / self.hh_n_groups),
-                              "Average Distortion %.4f" % distortion, 
-                              "KL in uncompressed groups: MAX %.3f" % kl_bits.max(), 
-                              "AVE %.3f" % kl_bits.mean(), 
-                              flush=True)
+                            _, _, hh_kl_bits  = self.update_annealing_factors(False)
+                            hh_kl_bits /= np.log(2.)
+                            mask = (self.hh_compressed_mask_groupwise == False)
+                            kl_bits = hh_kl_bits.flatten()[mask.flatten()]
+                            print("Compress progress: %d" % (100 * self.hh_compressed_num / self.hh_n_groups),
+                                "Average Distortion %.4f" % distortion, 
+                                "KL in uncompressed groups: MAX %.3f" % kl_bits.max(), 
+                                "AVE %.3f" % kl_bits.mean(), 
+                                flush=True)
+                        except:
+                            pass
             if verbose:
                 print(' ')
 
@@ -774,20 +777,23 @@ class TestBNNmodel(nn.Module):
                                )
                 if _i in h_print_step:
                     if verbose:
-                        with torch.no_grad():
-                            y_pred = self.predict(x.to(self.device)).cpu()
-                            y_ori = y.cpu()
-                            distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
+                        try:
+                            with torch.no_grad():
+                                y_pred = self.predict(x.to(self.device)).cpu()
+                                y_ori = y.cpu()
+                                distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
 
-                        _, h_kl_bits, _  = self.update_annealing_factors(False)
-                        h_kl_bits /= np.log(2.)
-                        mask = (self.h_compressed_mask_groupwise == False)
-                        kl_bits = h_kl_bits.flatten()[mask.flatten()]
-                        print("Compress progress: %d" % (100 * self.h_compressed_num / self.h_n_groups),
-                              "Average Distortion %.4f" % distortion, 
-                              "KL in uncompressed groups: MAX %.3f" % kl_bits.max(), 
-                              "AVE %.3f" % kl_bits.mean(), 
-                              flush=True)
+                            _, h_kl_bits, _  = self.update_annealing_factors(False)
+                            h_kl_bits /= np.log(2.)
+                            mask = (self.h_compressed_mask_groupwise == False)
+                            kl_bits = h_kl_bits.flatten()[mask.flatten()]
+                            print("Compress progress: %d" % (100 * self.h_compressed_num / self.h_n_groups),
+                                "Average Distortion %.4f" % distortion, 
+                                "KL in uncompressed groups: MAX %.3f" % kl_bits.max(), 
+                                "AVE %.3f" % kl_bits.mean(), 
+                                flush=True)
+                        except:
+                            pass
             if verbose:
                 print(' ')
 
@@ -821,22 +827,25 @@ class TestBNNmodel(nn.Module):
                             )
             if _i in print_step:
                 if verbose:
-                    with torch.no_grad():
-                        y_pred = self.predict(x.to(self.device)).cpu()
-                        y_ori = y.cpu()
-                        distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
-                    if self.patch:
-                        kl_bits, _, _  = self.update_annealing_factors(False)
-                    else:
-                        kl_bits = self.update_annealing_factors(False)
-                    kl_bits /= np.log(2.)
-                    mask = (self.compressed_mask_groupwise == False)
-                    kl_bits = kl_bits.flatten()[mask.flatten()]
-                    print("Compress progress: %d; " % (100 * self.compressed_num / self.n_groups),
-                            "Average Distortion %.4f; " % distortion, 
-                            "KL in uncompressed groups: MAX %.3f" % kl_bits.max(), 
-                            "AVE %.3f. " % kl_bits.mean(), 
-                            flush=True)
+                    try: 
+                        with torch.no_grad():
+                            y_pred = self.predict(x.to(self.device)).cpu()
+                            y_ori = y.cpu()
+                            distortion = np.mean(metric(y_ori.numpy(), y_pred.numpy(), self.dataset))
+                        if self.patch:
+                            kl_bits, _, _  = self.update_annealing_factors(False)
+                        else:
+                            kl_bits = self.update_annealing_factors(False)
+                        kl_bits /= np.log(2.)
+                        mask = (self.compressed_mask_groupwise == False)
+                        kl_bits = kl_bits.flatten()[mask.flatten()]
+                        print("Compress progress: %d; " % (100 * self.compressed_num / self.n_groups),
+                                "Average Distortion %.4f; " % distortion, 
+                                "KL in uncompressed groups: MAX %.3f" % kl_bits.max(), 
+                                "AVE %.3f. " % kl_bits.mean(), 
+                                flush=True)
+                    except:
+                        pass
 
         with torch.no_grad():
             y_pred = self.predict(x.to(self.device)).cpu()
