@@ -46,12 +46,10 @@ You can also adjust the hyperparameters by modifying ```config.py```
 ## Citation
 Please consider citing the following paper if you use this repo.
 ```
-@misc{he2023recombiner,
+@inproceedings{he2024recombiner,
       title={RECOMBINER: Robust and Enhanced Compression with Bayesian Implicit Neural Representations}, 
       author={Jiajun He and Gergely Flamich and Zongyu Guo and José Miguel Hernández-Lobato},
-      year={2023},
-      eprint={2309.17182},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+      booktitle={International Conference on Learning Representations},
+      year={2024},
 }
 ```
