@@ -2,6 +2,10 @@
 
 Official PyTorch implementation of the INR-based codec [RECOMBINER](https://arxiv.org/abs/2309.17182) (published in ICLR 2024). It sets a new SOTA on CIFAR-10 at low bitrates and achieves strong performance on other modalities comparing to other INR-based codecs. This repo provides implementations of RECOMBINER across modalities, including image (Kodak, CIFAR-10), audio, video, and protein 3D structure. 
 
+## Examples
+Examples of video and protein structures compressed with RECOMBINER.
+![](examples/video_example.gif)
+![](examples/protein1.gif)
 
 ## Installation
 
